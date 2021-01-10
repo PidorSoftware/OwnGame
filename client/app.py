@@ -31,11 +31,11 @@ class MyApp(App):
 		self.popup.dismiss()
 
 	def show_question(self, instance):
-		if instance.text:
-			instance.clear_widgets()
-			self.popup = Popup(title='question', content=Label(text=string), auto_dismiss=False)
-			self.popup.open()
-			Clock.schedule_once(self.dismiss_popup, 1)			
+		instance.disabled = True
+		instance.opacity = 0
+		self.popup = Popup(title='question', content=Label(text=string), auto_dismiss=False)
+		self.popup.open()
+		Clock.schedule_once(self.dismiss_popup, 1)			
 
 if __name__ == '__main__':
 	MyApp().run()
