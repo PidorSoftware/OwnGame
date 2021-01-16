@@ -20,28 +20,36 @@ background_color = (0.0, 0.02745098, 0.525490196, 1.0)
 with open('questions.json') as file:
     data_json = json.loads(file.read())
 
+
 def right_answer(rounds, theme, question):
-    return(str(data_json['rounds']['round'][rounds]['themes']['theme'][theme]['questions']['question'][question]['right']['answer']))
+    return (str(data_json['rounds']['round'][rounds]['themes']['theme'][theme]['questions']['question'][question]['right']['answer']))
+
 
 def question(rounds, theme, question):
     return (str(data_json['rounds']['round'][rounds]['themes']['theme'][theme]['questions']['question'][question]['scenario']['atom']))
 
+
 def price_of_question(rounds, theme, question):
     return (data_json['rounds']['round'][rounds]['themes']['theme'][theme]['questions']['question'][question]['@price'])
+
 
 def number_of_rounds():
     return (len(data_json['rounds']['round']))
 
+
 def number_of_themes(rounds):
     return (len(data_json['rounds']['round'][rounds]['themes']['theme']))
 
-def theme(rounds,theme):
+
+def theme(rounds, theme):
     return (data_json['rounds']['round'][rounds]['themes']['theme'][theme]['@name'])
+
 
 def number_of_quetions(rounds, themes):
     return (len(data_json['rounds']['round'][rounds]['themes']['theme'][themes]['questions']['question']))
 
-class MyApp(App):    
+
+class MyApp(App):
 
     def build(self):
         Window.fullscreen = True
@@ -54,7 +62,7 @@ class MyApp(App):
         print(self.images)
         for i in range(self.number_of_players):
             self.names[i] = BoxLayout(size_hint=[1, 0.15])
-            self.images[i] = BoxLayout(size_hint =[1, 0.7], padding=10)
+            self.images[i] = BoxLayout(size_hint=[1, 0.7], padding=10)
             self.scores[i][0] = BoxLayout(size_hint=[1, 0.15])
             self.images[i].add_widget(Image(source='player2.jpg'))
             self.names[i].add_widget(Label(text='Игрок '+str(i + 1)))
@@ -69,18 +77,19 @@ class MyApp(App):
             themes_box = BoxLayout(orientation='horizontal')
             for j in range(self.questions + 1):
                 if j != 0:
-                    btn = Button(text = str(price_of_question(self.rounds, i, j - 1)),
-                                background_color = (0.0, 0.0, 1.0, 1.0),
-                                on_press = self.show_question,
-                                background_disabled_down = '' )
-                    btn.id = [i,j]
+                    btn = Button(text=str(price_of_question(self.rounds, i, j - 1)),
+                                 background_color=(0.0, 0.0, 1.0, 1.0),
+                                 on_press=self.show_question,
+                                 background_disabled_down='')
+                    btn.id = [i, j]
                     themes_box.add_widget(btn)
                 else:
-                    label = Label(text=theme(self.rounds, i), text_size=(110,None), halign='center')
+                    label = Label(text=theme(self.rounds, i),
+                                  text_size=(110, None), halign='center')
                     themes_box.add_widget(label)
             self.main_box.add_widget(themes_box)
 
-        self.panel = BoxLayout(orientation='horizontal',size_hint=[1, 1.5])
+        self.panel = BoxLayout(orientation='horizontal', size_hint=[1, 1.5])
 
         for i in range(self.number_of_players):
             self.players[i] = BoxLayout(orientation='vertical')
@@ -95,33 +104,38 @@ class MyApp(App):
 
     def dismiss_popup(self, instance):
         if(self.answer.text == right_answer(self.rounds, self.current_theme, self.current_question - 1)):
-            self.scores[0][1] += int(price_of_question(self.rounds, self.current_theme, self.current_question - 1))
+            self.scores[0][1] += int(price_of_question(self.rounds,
+                                                       self.current_theme, self.current_question - 1))
         else:
-            self.scores[0][1] -= int(price_of_question(self.rounds, self.current_theme, self.current_question - 1))
+            self.scores[0][1] -= int(price_of_question(self.rounds,
+                                                       self.current_theme, self.current_question - 1))
         self.popup.dismiss()
         self.scores[0][2].text = str(self.scores[0][1])
 
     def show_question(self, instance):
         instance.disabled = True
         instance.opacity = 0
-        label = Label(text=question(self.rounds, instance.id[0], instance.id[1]-1), text_size=(600,None), halign='center')
+        label = Label(text=question(
+            self.rounds, instance.id[0], instance.id[1]-1), text_size=(600, None), halign='center')
         self.current_theme = instance.id[0]
         self.current_question = instance.id[1]
         general_box = BoxLayout(orientation='vertical')
-        box_with_question = BoxLayout(orientation='vertical', size_hint=[1, 0.7])
+        box_with_question = BoxLayout(
+            orientation='vertical', size_hint=[1, 0.7])
         box_with_question.add_widget(label)
         box_with_input = BoxLayout(orientation='vertical', size_hint=[1, 0.2])
         self.answer = TextInput()
         box_with_input.add_widget(self.answer)
-        box_with_input.add_widget(Button(text='Ответить', on_press=self.dismiss_popup))
+        box_with_input.add_widget(
+            Button(text='Ответить', on_press=self.dismiss_popup))
         general_box.add_widget(box_with_question)
         general_box.add_widget(box_with_input)
 
-
         self.popup = Popup(title='Вопрос '+str((instance.id[0] * self.questions) + instance.id[1] + 1),
-                            content=general_box,
-                            auto_dismiss=False)
-        self.popup.open()    
+                           content=general_box,
+                           auto_dismiss=False)
+        self.popup.open()
+
 
 if __name__ == '__main__':
     MyApp().run()
